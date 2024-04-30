@@ -1,13 +1,20 @@
-import aiosql, asyncio
+"""
+Источник данных SIEM KOMRAD
+"""
+__author__ = "6dba"
+__date__ = "30/04/2024"
+
+import aiosql
+import asyncio
 
 from core.repositories.base.connection import PostgreSQLConnection
-from core.repositories.base.repository import AbstractRepository
+from core.repositories.base.repository import AbstractSIEMRepository
 from core.settings import settings
 
 
-class KOMRADRepositorySQL(AbstractRepository):
+class KOMRADRepositorySQL(AbstractSIEMRepository):
     """
-
+    Источник данных SIEM KOMRAD, используя SQL
     """
     def __init__(self):
         super(KOMRADRepositorySQL, self).__init__()
@@ -16,10 +23,10 @@ class KOMRADRepositorySQL(AbstractRepository):
 
     async def incident(self, incident_id: int):
         """
-        Получение полных данных об инциденте
+        Получение полных данных об указанном инциденте
 
-        :param incident_id:
-        :return:
+        :param int incident_id: Идентификатор инцидента
+        :return: Данные об инциденте
         """
         if not incident_id:
             return None
@@ -31,9 +38,9 @@ class KOMRADRepositorySQL(AbstractRepository):
         """
         Получение данных об инцидентах
 
-        :param count:
-        :param offset:
-        :return:
+        :param int count: Количество инцидентов для выборки
+        :param int offset: Смещение
+        :return: Данные об инцидентах
         """
         raise NotImplementedError
         if not count:
