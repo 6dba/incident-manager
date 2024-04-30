@@ -33,17 +33,18 @@ class BaseService(AbstractService):
 
     def _startup(self):
         """
-        Действия при запуске сервиса
+        Запуск сервиса
         """
         return None
 
     def _shutdown(self):
         """
-        Действия при остановке сервиса
+        Остановка сервиса
         """
+        return None
 
     def work(self):
         """
-        Основной рабочий цикл сервиса
+        Рабочий цикл сервиса
         """
         return None

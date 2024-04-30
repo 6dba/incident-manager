@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     SQL_DRIVER: str
 
     class Config:
-        env_file = find_dotenv(".env.dev")  # Указываем один файл для простоты
+        env_file = find_dotenv(".env.dev")
 
 
 settings = Settings()

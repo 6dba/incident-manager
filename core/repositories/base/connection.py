@@ -1,5 +1,5 @@
 """
-
+Подключение к различным источникам данных
 """
 __author__ = "6dba"
 __date__ = "28/04/2024"
@@ -19,6 +19,9 @@ class AbstractDatabaseConnection(ABC):
 
 
 class PostgreSQLConnection(AbstractDatabaseConnection):
+    """
+    Асинхронного подключения к PostgreSQL
+    """
     def __init__(self):
         self.__connection = None
 
