@@ -6,7 +6,7 @@ __date__ = "29/04/2024"
 
 from enum import Enum
 
-from core.repositories.base.repository import BaseRepository
+from core.repositories.base.repository import BaseSiemRepository
 from core.repositories.komrad import KOMRADRepositorySQL
 
 
@@ -42,4 +42,4 @@ class RepositoryFactory:
         :param RepositoryProvider provider: Поддерживаемый способ поставки данных
         :return: Репозиторий
         """
-        return RepositoryFactory.__REPOSITORIES.get((siem or '', provider or ''), BaseRepository)
+        return RepositoryFactory.__REPOSITORIES.get((siem or '', provider or ''), BaseSiemRepository)

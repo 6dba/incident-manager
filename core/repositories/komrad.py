@@ -4,15 +4,18 @@
 __author__ = "6dba"
 __date__ = "30/04/2024"
 
+from typing import Any
+
 import aiosql
 import asyncio
 
 from core.repositories.base.connection import PostgreSQLConnection
-from core.repositories.base.repository import AbstractSIEMRepository
+from core.repositories.base.incident import IncidentModel
+from core.repositories.base.repository import BaseSiemRepository
 from core.settings import settings
 
 
-class KOMRADRepositorySQL(AbstractSIEMRepository):
+class KOMRADRepositorySQL(BaseSiemRepository):
     """
     Источник данных SIEM KOMRAD, используя SQL
     """
@@ -32,9 +35,9 @@ class KOMRADRepositorySQL(AbstractSIEMRepository):
             return None
 
         async with self.__connection as conn:
-            return await asyncio.run(self.__queries.get_detailed_incident(conn, incident_id))
+            return await asyncio.run(self.__queries.get_detailed_incident(conn, incident_id=incident_id))
 
-    async def incidents(self, count: int, offset: int = None):
+    async def incidents(self, count: int, offset: int = 0):
         """
         Получение данных об инцидентах
 
@@ -42,9 +45,14 @@ class KOMRADRepositorySQL(AbstractSIEMRepository):
         :param int offset: Смещение
         :return: Данные об инцидентах
         """
-        raise NotImplementedError
-        if not count:
-            return None
-
         async with self.__connection as conn:
-            return await asyncio.run(self.__queries._(conn, count, offset or 0))
+            return await self.__queries.get_incidents(conn, count=count, offset=offset)
+
+    def unification(self, incident: Any) -> IncidentModel:
+        """
+        Унификация данных об инциденте
+
+        :param incident:
+        :return:
+        """
+        return IncidentModel(**dict(incident))
