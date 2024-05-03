@@ -56,7 +56,7 @@ SELECT
     threats_array,
     gossopka_incident_category
 FROM incman.incidents
-    JOIN (
+    LEFT JOIN (
         SELECT
             id as dir_id,
             name,
@@ -89,4 +89,99 @@ FROM incman.incidents
         FROM corrdisp.directives
     ) AS directive
     ON directive_id = directive.dir_id
-WHERE incman.incidents.id = :id
+WHERE incman.incidents.id = :incident_id
+
+-- name: get_incidents
+-- Получение данных об инцидентах
+SELECT
+    id,
+    directive_id,
+    name,
+    directive_severity,
+    directive_assigned_to,
+    reaction_script_filename,
+    reaction_is_enabled,
+    created_at,
+    directive_updated_at,
+    aggregate_in,
+    aggregated_min_count,
+    group_id,
+    gossopka,
+    directive_recommendation,
+    aggregate_greedily_count,
+    directive_gossopka_incident_type,
+    rule,
+    deleted_at,
+    risk_score,
+    author,
+    reference_url,
+    note,
+    timestamp_override,
+    rule_edit_state,
+    produce_incident,
+    produce_aggregated_event,
+    store_keys_in_event,
+    directive_threats_array,
+    directive_gossopka_incident_category,
+    assigned_to,
+    is_retro,
+    initial_time,
+    registration_time,
+    close_time,
+    status,
+    severity,
+    event_doc_keys,
+    gossopka_sending_status,
+    security_label,
+    tenant_id,
+    correlator_ids,
+    recommendation,
+    has_errors,
+    updated_at,
+    comments,
+    status_reason,
+    histories,
+    gossopka_incident_type,
+    gossopka_incident_id,
+    response_stage,
+    description,
+    asset_ips,
+    threats_array,
+    gossopka_incident_category
+FROM incman.incidents
+    LEFT JOIN (
+        SELECT
+            id as dir_id,
+            name,
+            severity as directive_severity,
+            assigned_to as directive_assigned_to,
+            reaction_script_filename,
+            reaction_is_enabled,
+            created_at,
+            updated_at as directive_updated_at,
+            aggregate_in,
+            aggregated_min_count,
+            group_id,
+            gossopka,
+            recommendation as directive_recommendation,
+            aggregate_greedily_count,
+            gossopka_incident_type as directive_gossopka_incident_type,
+            rule,
+            deleted_at,
+            risk_score,
+            author,
+            reference_url,
+            note,
+            timestamp_override,
+            rule_edit_state,
+            produce_incident,
+            produce_aggregated_event,
+            store_keys_in_event,
+            threats_array as directive_threats_array,
+            gossopka_incident_category as directive_gossopka_incident_category
+        FROM corrdisp.directives
+    ) AS directive
+    ON directive_id = directive.dir_id
+ORDER BY id DESC
+LIMIT :count
+OFFSET :offset

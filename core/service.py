@@ -6,8 +6,14 @@ __author__ = "6dba"
 __date__ = "28/04/2024"
 
 from abc import ABC, abstractmethod
+from enum import Enum
 
-from core.repositories.tools import RepositoryFactory
+
+class Exchanges(str, Enum):
+    """
+    Обменники сервисов, которые публикуют события
+    """
+    COLLECTOR = 'collector'
 
 
 class AbstractService(ABC):
@@ -18,13 +24,16 @@ class AbstractService(ABC):
     def _shutdown(self): raise NotImplementedError
 
     @abstractmethod
-    def work(self): raise NotImplementedError
+    async def work(self): raise NotImplementedError
 
 
 class BaseService(AbstractService):
     """
     Базовый сервис
     """
+    # Обменник сервиса
+    EXCHANGE = None
+
     def __init__(self):
         self._startup()
 
@@ -43,7 +52,7 @@ class BaseService(AbstractService):
         """
         return None
 
-    def work(self):
+    async def work(self):
         """
         Рабочий цикл сервиса
         """

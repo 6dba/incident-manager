@@ -5,6 +5,7 @@ __author__ = '6dba'
 __date__ = '28/04/2024'
 
 from dotenv import find_dotenv
+from propan import RabbitBroker
 from pydantic_settings import BaseSettings
 
 
@@ -24,3 +25,4 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+broker = RabbitBroker(settings.RABBITMQ_DSN).connect()
