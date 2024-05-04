@@ -35,20 +35,24 @@ class KOMRADRepositorySQL(BaseSiemRepository):
             return None
 
         async with self.__connection as conn:
-            return await asyncio.run(self.__queries.get_detailed_incident(conn, incident_id=incident_id))
+            return self._unification(await self.__queries.get_detailed_incident(conn, incident_id=incident_id))
 
-    async def incidents(self, count: int, offset: int = 0):
+    async def incidents(self, limit: int = 10, offset: int = 0, last_incident_id: int = 0):
         """
         Получение данных об инцидентах
 
-        :param int count: Количество инцидентов для выборки
+        :param last_incident_id: Идентификатор последнего инцидента
+        :param int limit: Количество инцидентов для выборки
         :param int offset: Смещение
         :return: Данные об инцидентах
         """
         async with self.__connection as conn:
-            return await self.__queries.get_incidents(conn, count=count, offset=offset)
+            incidents = await self.__queries.get_last_incidents(
+                conn, limit=limit, offset=offset, last_incident_id=last_incident_id
+            )
+            return [self._unification(incident) for incident in incidents]
 
-    def unification(self, incident: Any) -> IncidentModel:
+    def _unification(self, incident: Any) -> IncidentModel:
         """
         Унификация данных об инциденте
 

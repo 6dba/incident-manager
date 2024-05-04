@@ -25,4 +25,4 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-broker = RabbitBroker(settings.RABBITMQ_DSN).connect()
+broker = RabbitBroker(settings.RABBITMQ_DSN)

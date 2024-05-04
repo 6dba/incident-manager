@@ -5,17 +5,13 @@ from typing import Any
 from pydantic import BaseModel
 
 
-class StatusEnum(str, Enum):
-    """
-    Статус инцидента
-    """
-    NEW = 'new'
-
-
 class SeverityEnum(str, Enum):
     """
     Критичность инцидента
     """
+    BASELINE = 'baseline'
+    LOW = 'low'
+    MEDIUM = 'medium'
     HIGH = 'high'
 
 
@@ -24,17 +20,26 @@ class IncidentModel(BaseModel):
     Унифицированная модель инцидента
     """
     id: int
-    gossopka: Any
-    gossopka_sending_status: str
     assigned_to: str
     is_retro: bool
     initial_time: datetime
     registration_time: datetime
-    # close_time: datetime = None
-    status: StatusEnum
+    close_time: datetime | None
+    status: str
     severity: SeverityEnum
+    event_doc_keys: list[str]
+    gossopka_sending_status: str
+    correlator_ids: list
     recommendation: str
+    has_errors: bool
+    updated_at: datetime | None
+    comments: str
+    status_reason: str
+    gossopka_incident_type: str
+    gossopka_incident_id: str | None
     description: str
+    asset_ips: list | None
+    threats_array: list | None
     gossopka_incident_category: str
 
     def __eq__(self, other):
