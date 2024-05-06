@@ -1,6 +1,7 @@
 import asyncio
-from services.collector.collector import CollectorService
+
+from services.processor.processor import ProcessorService
 
 if __name__ == '__main__':
     # Инициализация и запуск сервиса
-    asyncio.run(CollectorService().start())
+    asyncio.run(ProcessorService().start())
