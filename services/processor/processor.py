@@ -4,6 +4,8 @@
 __author__ = "6dba"
 __date__ = "29/04/2024"
 
+from gostcrypto import gosthash
+
 from core.messaging.broker import Exchanges, Queues
 from core.repositories.base.incident import IncidentModel
 from core.service import BaseService
@@ -23,7 +25,7 @@ class ProcessorService(BaseService):
         """
         Регистрация обработчиков сервиса
         """
-        @self.broker.handle(self.queue, Exchanges.COLLECTOR.value)  # Подписываемся на события сервиса сбора данных
+        @self.broker.handle(self.queue, Exchanges.COLLECTOR.value)  # Подписка на события сервиса сбора данных
         async def process(incidents: list[IncidentModel]):
             await self.__process(incidents)
 
@@ -33,6 +35,12 @@ class ProcessorService(BaseService):
 
         :param list[IncidentModel] incidents: Список инцидентов
         """
+        for incident in incidents:
+            if not incident.checksum:
+                # Вычисление контрольной суммы инцидента по алгоритму Стрибог 256 ГОСТ 34.11-2018.
+                incident.checksum = gosthash.new(
+                    'streebog256', data=incident.json(sort_keys=True).encode()
+                ).hexdigest()
         # Публикация новых инцидентов
         await self.broker.publish(exchange=self.exchange, message=incidents)
 

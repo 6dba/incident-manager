@@ -5,6 +5,7 @@ __author__ = "6dba"
 __date__ = "06/05/2024"
 
 from core.messaging.broker import Exchanges, Queues
+from core.repositories.base.incident import IncidentModel
 from core.service import BaseService
 
 
@@ -23,8 +24,10 @@ class NotifierService(BaseService):
         Регистрация обработчиков сервиса
         """
         @self.broker.handle(self.queue, Exchanges.MANAGER.value)  # Подписываемся на события сервиса сбора данных
-        async def notify(body):
-            pass
+        async def notify(incidents: list[IncidentModel]):
+            # Написать какой-нибудь смтп отправщик сообщений
+            for incident in incidents:
+                print(incident)
 
     async def start(self):
         """
