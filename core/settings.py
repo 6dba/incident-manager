@@ -17,7 +17,9 @@ class Settings(BaseSettings):
     SIEM_PROVIDER: str
     SQL_DSN: str
     SQL_PATH: str
-    SQL_DRIVER: str
+    FTP_HOST: str
+    FTP_USER: str
+    FTP_PASSWORD: str
 
     class Config:
         env_file = find_dotenv(".env.dev")

@@ -1,8 +1,13 @@
+"""
+
+"""
+__author__ = "6dba"
+__date__ = "03/05/2024"
+
+import re
 from datetime import datetime
 from enum import Enum
-from typing import Any
-
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field
 
 
 class SeverityEnum(str, Enum):
@@ -15,32 +20,56 @@ class SeverityEnum(str, Enum):
     HIGH = 'high'
 
 
+class StatusEnum(str, Enum):
+    """
+    Статус инцидента
+    """
+    NEW = 'new'
+    INVESTIGATING = 'investigating'
+    CLOSED = 'closed'
+    FALSE = 'fp'
+
+
+class GossopkaSendingStatusEnum(str, Enum):
+    """
+    Статус отправки в ГосСОПКА
+    """
+    IGNORE = 'ignore'
+    WAITING = 'waiting'
+    SUCCESS = 'success'
+    FAILED = 'failed'
+
+
 class IncidentModel(BaseModel):
     """
     Унифицированная модель инцидента
     """
     id: int
-    assigned_to: str
-    is_retro: bool
-    initial_time: datetime
-    registration_time: datetime
+    assigned_to: str  # Ответственный
+    initial_time: datetime  # Дата фактического начала инцидента
+    registration_time: datetime  # Дата регистрации инцидента
     close_time: datetime | None
-    status: str
+    status: StatusEnum
     severity: SeverityEnum
-    event_doc_keys: list[str]
-    gossopka_sending_status: str
-    correlator_ids: list
+    gossopka_sending_status: GossopkaSendingStatusEnum
     recommendation: str
     has_errors: bool
     updated_at: datetime | None
     comments: str
-    status_reason: str
+    status_reason: str  # Причина появления инцидента
     gossopka_incident_type: str
     gossopka_incident_id: str | None
     description: str
     asset_ips: list | None
     threats_array: list | None
     gossopka_incident_category: str
+    response_stage: int  # Линия расследования
+    checksum: str = None  # Контрольная сумма инцидента
+
+    @computed_field
+    @property
+    def emails(self) -> list[str]:
+        return re.findall(r"[0-9a-zA-z]+@[0-9a-zA-z]+\.[0-9a-zA-z]+", self.assigned_to)
 
     def __eq__(self, other):
         if other.__class__ is self.__class__:
@@ -100,4 +129,3 @@ class IncidentModel(BaseModel):
     #  'asset_ips' = {NoneType} None
     #  'threats_array' = {NoneType} None
     #  'gossopka_incident_category' = {str} 'Уведомление о компьютерном инциденте'
-
