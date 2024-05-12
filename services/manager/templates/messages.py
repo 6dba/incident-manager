@@ -17,23 +17,16 @@ class DocCellMessageEnum(str, Enum):
     STATUS_CLOSED = 'Меры приняты, атака локализована'
     STATUS_INVESTIGATED = 'Проводятся мероприятия по локализации компьютерной атаки'
     STATUS_AGAIN = 'Возобновлены мероприятия по локализации компьютерной атаки'
-
     GOSSOPKA = 'Необходимость привлечения сил ГосСОПКА'
     GOSSOPKA_YES = 'Да'
     GOSSOPKA_NO = 'Нет'
-
     DESCRIPTION = 'Краткое описание события ИБ'
     REGISTRATION_TIME = 'Дата и время выявления'
     CLOSE_TIME = 'Дата и время завершения'
-
     ASSET_IPv4S = 'IPv4-адрес (маршрутизируемый) атакованного ресурса'
-
     REGION = 'Страна/Регион'
-
     OTHER = 'Дополнительные значимые сведения о компьютерной атаке (в свободной форме)'
-
     THREATS = 'Описание используемых уязвимостей'
-
     OWNER = 'Владелец информационного ресурса'
 
 
@@ -50,7 +43,7 @@ TO_REPLACE = {
         GossopkaSendingStatusEnum.IGNORE: DocCellMessageEnum.GOSSOPKA_NO
     }.get(incident.gossopka_sending_status),
     DocCellMessageEnum.DESCRIPTION: lambda incident: incident.description or '' +
-                                                     f'Контрольная сумма Стрибог 256: {incident.checksum}',
+                                                     f'\n\nКонтрольная сумма по алгоритму Стрибог 256: {incident.checksum}',
     DocCellMessageEnum.REGISTRATION_TIME: lambda incident: str(incident.registration_time),
     DocCellMessageEnum.CLOSE_TIME: lambda incident: str(incident.close_time) if incident.close_time else None,
     DocCellMessageEnum.ASSET_IPv4S: lambda incident: incident.asset_ips,

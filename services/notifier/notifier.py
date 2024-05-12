@@ -25,9 +25,7 @@ class NotifierService(BaseService):
         """
         @self.broker.handle(self.queue, Exchanges.MANAGER.value)  # Подписываемся на события сервиса сбора данных
         async def notify(incidents: list[IncidentModel]):
-            # Написать какой-нибудь смтп отправщик сообщений
-            for incident in incidents:
-                print(incident)
+            pass
 
     async def start(self):
         """

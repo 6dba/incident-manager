@@ -64,7 +64,7 @@ class IncidentModel(BaseModel):
     threats_array: list | None
     gossopka_incident_category: str
     response_stage: int  # Линия расследования
-    checksum: str = None  # Контрольная сумма инцидента
+    checksum: str | None = None  # Контрольная сумма инцидента
 
     @computed_field
     @property

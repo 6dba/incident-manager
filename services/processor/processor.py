@@ -9,6 +9,7 @@ from gostcrypto import gosthash
 from core.messaging.broker import Exchanges, Queues
 from core.repositories.base.incident import IncidentModel
 from core.service import BaseService
+from services.processor.classifier import IncidentClassifier
 
 
 class ProcessorService(BaseService):
@@ -36,6 +37,8 @@ class ProcessorService(BaseService):
         :param list[IncidentModel] incidents: Список инцидентов
         """
         for incident in incidents:
+            # Определение типа инцидента
+            IncidentClassifier.classify(incident)
             if not incident.checksum:
                 # Вычисление контрольной суммы инцидента по алгоритму Стрибог 256 ГОСТ 34.11-2018.
                 incident.checksum = gosthash.new(

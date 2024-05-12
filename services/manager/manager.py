@@ -20,6 +20,7 @@ class ManagerService(BaseService):
     """
 
     """
+
     def __init__(self):
         super().__init__()
         # Обменник, в который сервис публикует события
@@ -34,6 +35,7 @@ class ManagerService(BaseService):
         """
         Регистрация обработчиков сервиса
         """
+
         @self.broker.handle(self.queue, Exchanges.PROCESSOR.value)  # Подписка события сервиса пост-обработки данных
         async def manage(incidents: list[IncidentModel]):
             await self.__manage(incidents)
@@ -44,30 +46,44 @@ class ManagerService(BaseService):
 
         :param list[IncidentModel] incidents:
         """
-        processed = []
+        processed_incidents = []
+        processed_docs = {}
+
         for incident in incidents:
             doc = self.__resolve_document(incident)
             table = doc.tables[0]
             # Заполнение таблицы документа, по данным инцидента
             self.__process_table(incident, table)
-            # Опубликовать событие или сохранить файл и опубликовать событие с ним
-            processed.append(incident)
+            processed_incidents.append(incident)
+            processed_docs.update({f'{incident.id}_{incident.gossopka_incident_type}.docx': doc})
 
-        if processed:
+        if processed_incidents:
             # Если появились обработанные документы - публикуем связанные с ними инциденты,
             # как способ сказать о том, какие инциденты были обработаны менеджером
-            await self.broker.publish(exchange=self.exchange, message=processed)
+            await self.broker.publish(exchange=self.exchange, message=processed_incidents)
 
-    def to_ftp(self, documents: list[Document]):
+        if processed_docs:
+            # Документы публикуем на указанный FTP сервер, для потребителей
+            self.__to_ftp(processed_docs)
+
+    @staticmethod
+    def __to_ftp(documents: dict[str: Document]):
         """
-
+        Передача обработанного файла на FTP сервер клиента
         :param documents:
         :return:
         """
-        session = ftplib.FTP(settings.FTP_HOST, settings.FTP_USER, settings.FTP_PASSWORD)
-
-        for document in documents:
-            pass
+        for title, document in documents.items():
+            local_path = f'temp/{title}'
+            # Временно сохраняем документ
+            document.save(local_path)
+            with ftplib.FTP(settings.FTP_HOST, settings.FTP_USER, settings.FTP_PASSWORD) as ftp, \
+                    open(local_path, 'rb') as file:
+                # Переключаемся в бинарный режим передачи данных
+                ftp.set_pasv(True)
+                ftp.storbinary(f'STOR {title}', file)
+            # Удаление временного файла
+            os.remove(local_path)
 
     @staticmethod
     def __process_table(incident: IncidentModel, table: Document):
@@ -127,4 +143,3 @@ class ManagerService(BaseService):
         Рабочий цикл сервиса
         """
         await self.app.run()
-
