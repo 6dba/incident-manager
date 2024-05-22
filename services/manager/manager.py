@@ -6,21 +6,20 @@ __date__ = "07/05/2024"
 
 import os
 import glob
-import ftplib
 from docx import Document
+from docx.shared import Pt
 
 from core.messaging.broker import Exchanges, Queues
-from core.repositories.base.incident import IncidentModel, StatusEnum
+from core.repositories.base.incident import IncidentModel
 from core.service import BaseService
-from core.settings import settings
+from services.manager.client import FTPClient, SMBClient
 from services.manager.templates.messages import TO_REPLACE
 
 
 class ManagerService(BaseService):
     """
-
+    Сервис файлов
     """
-
     def __init__(self):
         super().__init__()
         # Обменник, в который сервис публикует события
@@ -64,12 +63,12 @@ class ManagerService(BaseService):
 
         if processed_docs:
             # Документы публикуем на указанный FTP сервер, для потребителей
-            self.__to_ftp(processed_docs)
+            self.__to_file_resources(processed_docs)
 
     @staticmethod
-    def __to_ftp(documents: dict[str: Document]):
+    def __to_file_resources(documents: dict[str: Document]):
         """
-        Передача обработанного файла на FTP сервер клиента
+        Передача обработанного файла на файловый ресурс
         :param documents:
         :return:
         """
@@ -77,13 +76,13 @@ class ManagerService(BaseService):
             local_path = f'temp/{title}'
             # Временно сохраняем документ
             document.save(local_path)
-            with ftplib.FTP(settings.FTP_HOST, settings.FTP_USER, settings.FTP_PASSWORD) as ftp, \
-                    open(local_path, 'rb') as file:
-                # Переключаемся в бинарный режим передачи данных
-                ftp.set_pasv(True)
-                ftp.storbinary(f'STOR {title}', file)
-            # Удаление временного файла
-            os.remove(local_path)
+            try:
+                _, _ = FTPClient().upload(local_path, title), SMBClient().upload(local_path, title)
+            except Exception as e:
+                pass
+            finally:
+                # Удаление временного файла
+                os.remove(local_path)
 
     @staticmethod
     def __process_table(incident: IncidentModel, table: Document):
@@ -120,7 +119,10 @@ class ManagerService(BaseService):
                 # Если для данной строки не нужно производить замен
                 continue
 
+            # Замена текста в ячейке таблицы
             row.cells[1].text = replaced
+            # Изменение размера шрифта
+            row.cells[1].paragraphs[0].runs[0].font.size = Pt(12)
             replaced_titles.append(title)
 
     def __resolve_document(self, incident: IncidentModel) -> Document:

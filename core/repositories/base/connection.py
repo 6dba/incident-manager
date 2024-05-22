@@ -20,7 +20,7 @@ class AbstractDatabaseConnection(ABC):
 
 class PostgreSQLConnection(AbstractDatabaseConnection):
     """
-    Асинхронного подключения к PostgreSQL
+    Асинхронное подключение к PostgreSQL
     """
     def __init__(self):
         self.__connection = None

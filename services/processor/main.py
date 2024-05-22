@@ -1,5 +1,4 @@
 import asyncio
-
 from services.processor.processor import ProcessorService
 
 if __name__ == '__main__':
