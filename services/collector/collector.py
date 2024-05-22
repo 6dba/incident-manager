@@ -17,7 +17,7 @@ class CollectorService(BaseService):
     """
     Сервис агрегации данных
     """
-    __polling_interval = 20  # Частота опроса источника данных
+    __polling_interval = 60  # Частота опроса источника данных
 
     def __init__(self):
         super().__init__()

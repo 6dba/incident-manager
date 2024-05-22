@@ -11,7 +11,7 @@ from core.repositories.base.incident import StatusEnum, GossopkaSendingStatusEnu
 
 class DocCellMessageEnum(str, Enum):
     """
-
+    Поля для замены в документе-шаблоне
     """
     STATUS = 'Статус реагирования'
     STATUS_CLOSED = 'Меры приняты, атака локализована'
@@ -42,8 +42,9 @@ TO_REPLACE = {
         GossopkaSendingStatusEnum.FAILED: DocCellMessageEnum.GOSSOPKA_NO,
         GossopkaSendingStatusEnum.IGNORE: DocCellMessageEnum.GOSSOPKA_NO
     }.get(incident.gossopka_sending_status),
-    DocCellMessageEnum.DESCRIPTION: lambda incident: incident.description or '' +
-                                                     f'\n\nКонтрольная сумма по алгоритму Стрибог 256: {incident.checksum}',
+    DocCellMessageEnum.DESCRIPTION:
+        lambda incident:
+            incident.description or '' + f'\n\nКонтрольная сумма по алгоритму Стрибог 256: {incident.checksum}',
     DocCellMessageEnum.REGISTRATION_TIME: lambda incident: str(incident.registration_time),
     DocCellMessageEnum.CLOSE_TIME: lambda incident: str(incident.close_time) if incident.close_time else None,
     DocCellMessageEnum.ASSET_IPv4S: lambda incident: incident.asset_ips,

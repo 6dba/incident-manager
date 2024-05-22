@@ -15,7 +15,7 @@ from core.settings import settings
 
 class KOMRADRepositorySQL(BaseSiemRepository):
     """
-    Источник данных SIEM KOMRAD, используя SQL
+    Источник данных SIEM KOMRAD посредством API на уровне SQL
     """
     def __init__(self):
         super().__init__()

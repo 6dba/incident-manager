@@ -24,7 +24,7 @@ def exchange(e: str) -> RabbitExchange:
 
 def queue(q: str) -> RabbitQueue:
     """
-    Получение очереди сервиса
+    Экземпляр очереди сервиса
 
     :param str q: Название очереди сервиса
     :return: Объект RabbitQueue
@@ -54,7 +54,7 @@ class Exchanges(Enum):
 
 class Queues(Enum):
     """
-    Подписчики обменников
+    Очереди подписчиков обменников
     """
     __metaclass__ = RabbitQueue
 
