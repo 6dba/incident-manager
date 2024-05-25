@@ -21,9 +21,10 @@ class Settings(BaseSettings):
     SQL_DSN: str
     SQL_PATH: str
 
-    FTP_HOST:  Optional[str] = None
+    FTP_HOST:  str
     FTP_USER: Optional[str] = None
     FTP_PASSWORD: Optional[str] = None
+    FTP_DIR_PATH: Optional[str] = None
 
     SMB_HOST: Optional[str] = None
     SMB_SERVER_NAME: Optional[str] = None

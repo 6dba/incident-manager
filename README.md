@@ -22,8 +22,13 @@
 
 ## Запуск проекта
 
-1. Установить зависимости
+1. ##### Установите [docker](https://docs.docker.com/engine/install/) и [docker-compose](https://docs.docker.com/compose/install/)
+2. ##### Оставьте необходимые для использования сервисы (можно оставить только нужные в директории `services/`) и выполните, находясь в корневой директории
 
-```shell
-pip install core/requirements.txt
-```
+
+   ```shell
+   docker compose up
+   ```
+   #### Внимание! Для запуска необходимо задать все необходимые переменные окружения в .env файле. Пример
+
+   ![](https://github.com/6dba/incident-manager/assets/75082146/23cb170a-f7e5-4295-9add-9e8cb0d86715)

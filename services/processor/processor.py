@@ -42,7 +42,7 @@ class ProcessorService(BaseService):
             if not incident.checksum:
                 # Вычисление контрольной суммы инцидента по алгоритму Стрибог 256 ГОСТ 34.11-2018.
                 incident.checksum = gosthash.new(
-                    'streebog256', data=incident.json(sort_keys=True).encode()
+                    'streebog256', data=incident.json().encode()
                 ).hexdigest()
         # Публикация новых инцидентов
         await self.broker.publish(exchange=self.exchange, message=incidents)

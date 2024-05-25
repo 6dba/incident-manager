@@ -50,6 +50,7 @@ class FTPClient:
         self.__host = settings.FTP_HOST
         self.__user = settings.FTP_USER
         self.__password = settings.FTP_PASSWORD
+        self.__target_dir = settings.FTP_DIR_PATH
 
     def upload(self, local_file_path, target_file_name):
         """
@@ -63,8 +64,10 @@ class FTPClient:
             return
 
         # Отправка файла по FTP
-        with ftplib.FTP(self.__host, self.__user, self.__password) as ftp, \
+        with ftplib.FTP(self.__host, self.__user or 'anonymous', self.__password or '') as ftp, \
                 open(local_file_path, 'rb') as file:
+            if self.__target_dir:
+                ftp.cwd(self.__target_dir)
             # Переключаемся в бинарный режим передачи данных
             ftp.set_pasv(True)
             ftp.storbinary(f'STOR {target_file_name}', file)
