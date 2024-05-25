@@ -1,0 +1,7 @@
+services:
+  manager:
+    container_name: manager
+    restart: unless-stopped
+    build:
+      context: ../../
+      dockerfile: services/manager/Dockerfile

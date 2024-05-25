@@ -1,0 +1,4 @@
+include:
+   - services/collector/collector.compose.yaml
+   - services/manager/manager.compose.yaml
+   - services/processor/processor.compose.yaml

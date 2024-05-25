@@ -1,0 +1,7 @@
+services:
+  notifier:
+    container_name: notifier
+    restart: unless-stopped
+    build:
+      context: ../../
+      dockerfile: services/notifier/Dockerfile

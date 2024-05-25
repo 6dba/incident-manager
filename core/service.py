@@ -1,6 +1,7 @@
 __author__ = "6dba"
 __date__ = "28/04/2024"
 
+import logging
 from abc import ABC, abstractmethod
 from propan import PropanApp
 
@@ -20,6 +21,7 @@ class BaseService(AbstractService):
     Базовый сервис
     """
     def __init__(self):
+        self.logger = logging.getLogger(type(self).__name__)
         self.broker = broker()
         self.app = PropanApp(self.broker)
 

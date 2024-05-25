@@ -1,0 +1,7 @@
+services:
+  processor:
+    container_name: processor
+    restart: unless-stopped
+    build:
+      context: ../../
+      dockerfile: services/processor/Dockerfile

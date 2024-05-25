@@ -5,7 +5,8 @@ __author__ = "6dba"
 __date__ = "07/05/2024"
 
 import os
-import glob
+from pathlib import Path
+from typing import Optional
 from docx import Document
 from docx.shared import Pt
 
@@ -25,9 +26,13 @@ class ManagerService(BaseService):
         # Обменник, в который сервис публикует события
         self.exchange = Exchanges.MANAGER.value
         self.queue = Queues.MANAGER.value
-        self.__template_pattern = r'templates/*.docx'
+        self.__service_dir_from_root = 'services/manager'
+        self.__template_dir = f'{self.__service_dir_from_root}/templates/'
         # {Название шаблона: Путь к файлу шаблона}
-        self.templates = {os.path.basename(p).removesuffix('.docx'): p for p in glob.glob(self.__template_pattern)}
+        self.templates = {
+            os.path.basename(p).removesuffix('.docx'): self.__template_dir + p
+            for p in os.listdir(self.__template_dir) if p.endswith('.docx')
+        }
         self.register_handlers()
 
     def register_handlers(self):
@@ -50,6 +55,8 @@ class ManagerService(BaseService):
 
         for incident in incidents:
             doc = self.__resolve_document(incident)
+            if not doc:
+                continue
             table = doc.tables[0]
             # Заполнение таблицы документа, по данным инцидента
             self.__process_table(incident, table)
@@ -65,21 +72,22 @@ class ManagerService(BaseService):
             # Документы публикуем на указанный FTP сервер, для потребителей
             self.__to_file_resources(processed_docs)
 
-    @staticmethod
-    def __to_file_resources(documents: dict[str: Document]):
+    def __to_file_resources(self, documents: dict[str: Document]):
         """
         Передача обработанного файла на файловый ресурс
         :param documents:
         :return:
         """
         for title, document in documents.items():
-            local_path = f'temp/{title}'
+            temp_path = f'{self.__service_dir_from_root}/temp'
+            Path(temp_path).mkdir(parents=True, exist_ok=True)
+            local_path = f'{temp_path}/{title}'
             # Временно сохраняем документ
             document.save(local_path)
             try:
                 _, _ = FTPClient().upload(local_path, title), SMBClient().upload(local_path, title)
             except Exception as e:
-                pass
+                self.logger.exception(e)
             finally:
                 # Удаление временного файла
                 os.remove(local_path)
@@ -125,7 +133,7 @@ class ManagerService(BaseService):
             row.cells[1].paragraphs[0].runs[0].font.size = Pt(12)
             replaced_titles.append(title)
 
-    def __resolve_document(self, incident: IncidentModel) -> Document:
+    def __resolve_document(self, incident: IncidentModel) -> Optional[Document]:
         """
         Разрешение документа-шаблона для инцидента
         :param IncidentModel incident:
@@ -135,7 +143,11 @@ class ManagerService(BaseService):
         """
         if incident.gossopka_incident_type.lower() not in list(map(lambda t: t.lower(), self.templates.keys())):
             # Если тип инцидента не соответствует ни одному шаблону
-            raise ValueError
+            self.logger.warning(
+                f'Не найдено ни одного подходящего шаблона для типа инцидента {incident.gossopka_incident_type}'
+                f'Перечень шаблонов: {self.templates}'
+            )
+            return None
 
         # Создаем объект документа для выбранного шаблона
         return Document(self.templates.get(incident.gossopka_incident_type, ''))

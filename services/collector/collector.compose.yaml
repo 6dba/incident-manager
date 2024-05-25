@@ -1,0 +1,7 @@
+services:
+  collector:
+    container_name: collector
+    restart: unless-stopped
+    build:
+      context: ../../
+      dockerfile: services/collector/Dockerfile

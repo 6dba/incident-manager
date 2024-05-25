@@ -27,7 +27,7 @@ class DocCellMessageEnum(str, Enum):
     REGION = 'Страна/Регион'
     OTHER = 'Дополнительные значимые сведения о компьютерной атаке (в свободной форме)'
     THREATS = 'Описание используемых уязвимостей'
-    OWNER = 'Владелец информационного ресурса'
+    APPLICANT = 'Заявитель'
 
 
 TO_REPLACE = {
@@ -44,12 +44,12 @@ TO_REPLACE = {
     }.get(incident.gossopka_sending_status),
     DocCellMessageEnum.DESCRIPTION:
         lambda incident:
-            incident.description or '' + f'\n\nКонтрольная сумма по алгоритму Стрибог 256: {incident.checksum}',
+        (incident.description or '') + f'\n\nКонтрольная сумма по алгоритму Стрибог 256: {incident.checksum}',
     DocCellMessageEnum.REGISTRATION_TIME: lambda incident: str(incident.registration_time),
     DocCellMessageEnum.CLOSE_TIME: lambda incident: str(incident.close_time) if incident.close_time else None,
     DocCellMessageEnum.ASSET_IPv4S: lambda incident: incident.asset_ips,
     DocCellMessageEnum.REGION: lambda _: 'Россия',
     DocCellMessageEnum.OTHER: lambda incident: incident.comments,
     DocCellMessageEnum.THREATS: lambda incident: incident.threats_array,
-    DocCellMessageEnum.OWNER: lambda incident: incident.assigned_to
+    DocCellMessageEnum.APPLICANT: lambda incident: incident.assigned_to
 }
