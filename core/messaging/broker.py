@@ -38,7 +38,7 @@ def broker() -> RabbitBroker:
 
     :return: Объект RabbitBroker
     """
-    return RabbitBroker(settings.RABBITMQ_DSN)
+    return RabbitBroker(settings.MQ_DSN)
 
 
 class Exchanges(Enum):

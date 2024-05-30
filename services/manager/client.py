@@ -16,30 +16,30 @@ class SMBClient:
     SMB клиент
     """
     def __init__(self):
-        self.__server_ip = settings.SMB_HOST
-        self.__server_name = settings.SMB_SERVER_NAME
-        self.__share_name = settings.SMB_SHARE_NAME
+        self.__name = settings.SMB_SHARE_NAME
+        self.__host = settings.SMB_HOST
+        self.__dir = settings.SMB_SHARE_DIR_PATH
         self.__username = settings.SMB_USERNAME
         self.__password = settings.SMB_PASSWORD
 
-    def upload(self, file_path, target_path):
+    def upload(self, local_file_path, target_file_path):
         """
         Загрузка файла на SMB сервер
 
-        :param file_path:
-        :param target_path:
+        :param local_file_path:
+        :param target_file_path:
         :return:
         """
-        if not self.__server_ip:
+        if not self.__host:
             return
 
-        with SMBConnection(
-                self.__username, self.__password, 'incident-manager', self.__server_name, use_ntlm_v2=True
-        ) as conn:
-            with open(file_path, 'rb') as file:
-                file_size = os.path.getsize(file_path)
-                conn.storeFile(self.__share_name, target_path, file, file_size)
-            conn.close()
+        connection = SMBConnection(
+            self.__username, self.__password, 'incident-manager-file-service', self.__name, use_ntlm_v2=True
+        )
+        connection.connect(self.__host)
+        with open(local_file_path, 'rb') as file:
+            connection.storeFile(self.__dir, target_file_path, file, os.path.getsize(local_file_path))
+        connection.close()
 
 
 class FTPClient:

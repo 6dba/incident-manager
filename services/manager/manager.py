@@ -122,7 +122,7 @@ class ManagerService(BaseService):
                 table._tbl.remove(row._tr)
                 continue
 
-            replaced = TO_REPLACE.get(title, lambda _: None)(incident)
+            replaced = TO_REPLACE.get(title.strip().lower(), lambda _: None)(incident)
             if not replaced:
                 # Если для данной строки не нужно производить замен
                 continue

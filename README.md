@@ -31,4 +31,4 @@
    ```
    #### Внимание! Для запуска необходимо задать все необходимые переменные окружения в .env файле. Пример
 
-   ![](https://github.com/6dba/incident-manager/assets/75082146/23cb170a-f7e5-4295-9add-9e8cb0d86715)
+   ![](https://github.com/6dba/incident-manager/assets/75082146/82e33b9c-7dbc-444d-8a2f-f0910fe44bb6)
